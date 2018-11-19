@@ -1,0 +1,27 @@
+#include <iostream>
+#include <thread>
+
+struct func
+{
+    int& i;
+    func(int& i_) :i(i_){}
+    void operator()()
+    {
+        for(unsigned j=0; j < 1000000; j++)
+        {   //This is potential access to the a dangling reference
+            do_something(i);
+        }
+    }
+};
+void oops()
+{
+    int some_local_state = 0;
+    func my)func(some_local_state);
+    std::thread y_thread(my_func);
+
+    //Because we have explicitly decided not to wait for my_thread by calling detach(). If the thread is still running
+    //then the next call to do_something(i) will access an already destroyed variable. Just like in single threaded code
+    //allowing a pointer or reference to a local variable to persist beyond the function exit is never a good idea, it
+    //is easy to make this mistake with multithreaded code it's not always immediately that this has happened.
+    my_thread.detach()
+}
